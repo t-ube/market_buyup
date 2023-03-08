@@ -195,6 +195,40 @@ class batchEditor:
             items.append(batch_item)
         return items
     
+ # shop_buyup_daily 用の情報を生成する
+    def getShopBuyupDaily4Hareruya2(self, records, cardDf):
+        items = []
+        if len(records) <= 0:
+            return items
+        timestamp = datetime.datetime.utcnow()
+        for item in records:
+            df = cardDf[cardDf['cn'] == item['cn']]
+            if len(df) == 0:
+                continue
+            df = df[df['expansion'] == item['expansion']]
+            if len(df) == 0:
+                continue
+            if int(item['mirror']) == 1:
+                df = df[df['is_mirror'] == True]
+            if len(df) == 0:
+                continue
+            batch_item = {
+                "master_id": df.iloc[0]['master_id'],
+                "market": item['market'],
+                "datetime": item['datetime']+'+09',
+                "updated_at": timestamp.strftime('%Y-%m-%d %H:%M:%S+00'),
+                "date": item['date'],
+                "price": int(item['price']),
+                "name": item['name'],
+                "rarity": item['rarity'],
+                "mirror": int(item['mirror'])
+            }
+            if item['link'] != 'n/a':
+                batch_item["link"] = item['link']
+
+            items.append(batch_item)
+        return items
+
 
 # 一括書き込み用
 class batchWriter:
